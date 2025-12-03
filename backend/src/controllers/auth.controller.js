@@ -81,3 +81,38 @@ export const forgotPassword = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const resetPassword = async (req, res) => {
+    const { resetToken, newPassword } = req.body;
+
+    try {
+        // Verify the reset token
+        const decoded = jwt.verify(resetToken, SECRET_KEY);
+
+        // Find the user by ID and ensure the token is valid and not expired
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.id },
+        });
+
+        if (!user || user.resetToken !== resetToken || new Date(user.resetTokenExpiry) < new Date()) {
+            return res.status(400).json({ success: false, message: "Invalid or expired token" });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password and clear the reset token
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetToken: null,
+                resetTokenExpiry: null,
+            },
+        });
+
+        res.status(200).json({ success: true, message: "Password reset successful" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
