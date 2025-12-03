@@ -85,3 +85,7 @@ The server will start on `http://localhost:5000`.
   ```
 
 Use these APIs to test the authentication functionality in Postman.
+
+## Design idea
+ - [Figma desgin 1](https://www.figma.com/design/IKbfsvISqRXkDxmSu4oetC/Recruitment-Portal--Community-?node-id=0-1&p=f&t=PMmOFbK6RV5Y1fGj-0)
+- [Figma desgin 2](https://www.figma.com/community/file/1552262349953288359/teamhub-hr-team-management-admin-dashboard-ui-design)
