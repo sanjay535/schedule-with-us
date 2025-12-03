@@ -7,15 +7,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  dob           DateTime
+  emailId       String   @unique
+  mobile        String?  // Optional
+  address       Address? @relation(fields: [addressId], references: [id])
+  addressId     Int?     @unique
+  role          String
+  student       Student? // Optional, for students
+  professional  Professional? // Optional, for working professionals
+  password      String
+  resetToken    String?  // Optional, for password reset
+  resetTokenExpiry DateTime? // Optional, expiry for reset token
+}
+
+model Address {
+  id      Int    @id @default(autoincrement())
+  city    String
+  state   String
+  country String
+  user    User?
+}
+
+model Student {
+  id          Int    @id @default(autoincrement())
+  collegeName String
+  passingYear Int
+  degree      String
+  userId      Int    @unique
+  user        User   @relation(fields: [userId], references: [id])
+}
+
+model Professional {
+  id          Int    @id @default(autoincrement())
+  companyName String
+  yearsOfExp  Int
+  userId      Int    @unique
+  user        User   @relation(fields: [userId], references: [id])
+}
+
 model Availability {
   id            Int      @id @default(autoincrement())
   interviewerId String
-  slots         String[]
+  slots         String
 }
 
 model Interview {
-  id            Int      @id @default(autoincrement())
-  interviewerId String
-  customerName  String
-  slot          String
+  id                 Int                 @id @default(autoincrement())
+  interviewerId      String?
+  customerName       String
+  slot               String
+  skill              String
+  dateTime           DateTime
+  isCompleted        Boolean  @default(false)
+  completedInterview CompletedInterview?
+}
+
+model CompletedInterview {
+  id          Int       @id @default(autoincrement())
+  interviewId Int       @unique
+  interview   Interview @relation(fields: [interviewId], references: [id])
+  removedBy   Int       // Admin ID who removed the interview
 }
